@@ -1,0 +1,37 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+
+<idea-plugin>
+
+    <!-- Unique id for this plugin. Must stay constant for the life of the plugin. -->
+    <id>com.jetbrains.rider.plugins.souder</id>
+
+    <!-- Text to display as name on Settings | Plugin page -->
+    <name>Souder</name>
+
+    <!-- Indicate this plugin can be loaded in all IntelliJ Platform-based products. -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <!-- Text to display as description on Settings | Plugin page -->
+    <description>
+        <![CDATA[
+      <b>Sou</b>rce/Hea<b>der</b> dynamic editor splitter for Rider and C++
+    ]]>
+    </description>
+    <change-notes>
+        <![CDATA[
+      <h2>0.1.0</h2>
+      <ul>
+        <li>Initial release</li>
+      </ul>
+    ]]>
+    </change-notes>
+
+    <!-- Text to display as company information on Settings | Plugin page -->
+    <vendor url="https://dervex.dev">Dervex</vendor>
+
+    <applicationListeners>
+        <listener
+                class="com.jetbrains.rider.plugins.souder.EditorListener"
+                topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
+    </applicationListeners>
+</idea-plugin>
