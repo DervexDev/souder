@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 
 val debounce: MutableList<VirtualFile> = mutableListOf()
+var targetFile: VirtualFile? = null
 
 fun debounce(file: VirtualFile, reset: Boolean = true): Unit? {
     if (debounce.contains(file)) {
@@ -68,6 +69,8 @@ class EditorListener : FileEditorManagerListener {
         val targetWindow = manager.windows[if (isSource) 0 else 1]
 
         if (manager.currentWindow != targetWindow) {
+            targetFile = file
+
             debounce.add(file)
             manager.closeFile(file)
 
@@ -80,9 +83,13 @@ class EditorListener : FileEditorManagerListener {
         debounce(file) ?: return
         isValid(file) ?: return
 
-        manager.closeFile(findFilePair(file) ?: return)
+        val pairedFile = findFilePair(file) ?: return
+
+        debounce.add(pairedFile)
+        manager.closeFile(pairedFile)
     }
 
+    @Suppress("UnstableApiUsage")
     override fun selectionChanged(event: FileEditorManagerEvent) {
         val file = event.newFile ?: return
         val oldFile = event.oldFile
@@ -94,10 +101,14 @@ class EditorListener : FileEditorManagerListener {
         isValid(file) ?: return
 
         val pairedFile = findFilePair(file) ?: return
+        val manager = FileEditorManagerEx.getInstanceEx(event.manager.project)
 
-        if (pairedFile == oldFile)
+        if (pairedFile == oldFile || !manager.isFileOpen(pairedFile))
             return
 
-        event.manager.openFile(pairedFile)
+        if (pairedFile == targetFile)
+            manager.openFile(pairedFile, null, options = FileEditorOpenOptions(requestFocus = true))
+        else
+            manager.openFile(pairedFile)
     }
 }

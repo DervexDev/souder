@@ -1,24 +1,28 @@
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.17.4"
+    id("org.jetbrains.intellij.platform") version "2.1.0"
     id("org.jetbrains.kotlin.jvm") version "1.9.25"
 }
 
 group = "com.jetbrains.rider.plugins.souder"
-version = "0.1.0"
+version = "0.2.0"
 
 repositories {
     mavenCentral()
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
 }
 
-// See https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
-intellij {
-    version = "2024.1.1"
-    type = "RD"
+dependencies {
+    intellijPlatform {
+        rider("2024.2.5")
+        instrumentationTools()
+    }
 }
 
 tasks {
@@ -27,9 +31,8 @@ tasks {
     }
 
     patchPluginXml {
-        version.set("${project.version}")
+        pluginVersion.set("${project.version}")
         sinceBuild.set("233")
-        untilBuild.set("242.*")
     }
 
     compileKotlin {
